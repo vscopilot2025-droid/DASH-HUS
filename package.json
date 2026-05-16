@@ -1,0 +1,19 @@
+{
+  "name": "dash-hus",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "db:setup-users": "node scripts/setup/setup-users-table.js",
+    "generate:indicators": "node scripts/data/generate-real-data.js",
+    "analyze:excel": "node scripts/data/analyze-excel.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.21.2",
+    "mariadb": "^3.5.2",
+    "mysql2": "^3.22.3",
+    "xlsx": "^0.18.5"
+  }
+}

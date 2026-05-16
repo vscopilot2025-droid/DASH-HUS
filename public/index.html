@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HUS - Panel de Control de Indicadores</title>
+  <link rel="stylesheet" href="styles/dashboard.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.min.js"></script>
+</head>
+<body>
+  <section id="loginView" class="login-view hidden">
+    <div class="login-card">
+      <div class="login-brand-head">
+        <img src="assets/hus-logo.png" alt="Logo Hospital Universitario de La Samaritana" class="login-logo">
+        <h2>Inicio de sesion</h2>
+      </div>
+      <p>Accede al Dashboard HUS con tu usuario institucional.</p>
+      <form id="loginForm" class="login-form" autocomplete="off">
+        <label for="loginUsername">Usuario</label>
+        <input id="loginUsername" type="text" placeholder="admin" required>
+
+        <label for="loginPassword">Contrasena</label>
+        <input id="loginPassword" type="password" placeholder="admin" required>
+
+        <button class="btn btn-primary" type="submit">Ingresar</button>
+        <p id="loginError" class="login-error"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-top">
+      <div class="logo-section">
+        <img id="husLogo" src="assets/hus-logo.png" alt="Logo HUS" class="logo">
+        <div class="logo-fallback hidden" id="logoFallback">HUS</div>
+        <div class="brand">
+          <h1>Sistema de Indicadores de Calidad</h1>
+          <p>Hospital Universitario de La Samaritana - Empresa Social del Estado</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <span class="session-pill" id="authUserPill">No autenticado</span>
+        <button id="logoutBtn" class="btn btn-secondary">Cerrar sesion</button>
+        <span class="session-avatar" id="userAvatar">AD</span>
+        <button id="uploadExcelBtn" class="btn btn-secondary">📊 Cargar Excel</button>
+        <input type="file" id="excelInput" accept=".xlsx,.xls" hidden>
+        <button id="resetBtn" class="btn btn-secondary">🔄 Restaurar</button>
+      </div>
+    </div>
+    
+    <div class="header-nav">
+      <button class="nav-btn active" data-screen="dashboard">📊 Panel de Control</button>
+      <button class="nav-btn" data-screen="areas">🏥 Áreas</button>
+      <button class="nav-btn" data-screen="table">📋 Tabla Completa</button>
+      <button class="nav-btn" data-screen="detail">📄 Detalle</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- SCREEN: DASHBOARD -->
+    <section id="dashboard-screen" class="screen active">
+      <!-- KPI CARDS -->
+      <div class="kpi-section">
+        <div class="kpi-card">
+          <div class="kpi-icon">📊</div>
+          <div class="kpi-content">
+            <div class="kpi-value" id="kpi-total">0</div>
+            <div class="kpi-label">INDICADORES</div>
+          </div>
+        </div>
+        
+        <div class="kpi-card success">
+          <div class="kpi-icon">✅</div>
+          <div class="kpi-content">
+            <div class="kpi-value" id="kpi-ok">0</div>
+            <div class="kpi-label">EN META</div>
+          </div>
+        </div>
+        
+        <div class="kpi-card warning">
+          <div class="kpi-icon">⚠️</div>
+          <div class="kpi-content">
+            <div class="kpi-value" id="kpi-warning">0</div>
+            <div class="kpi-label">EN VIGILANCIA</div>
+          </div>
+        </div>
+        
+        <div class="kpi-card danger">
+          <div class="kpi-icon">🔴</div>
+          <div class="kpi-content">
+            <div class="kpi-value" id="kpi-critical">0</div>
+            <div class="kpi-label">FUERA DE META</div>
+          </div>
+        </div>
+        
+        <div class="kpi-card primary">
+          <div class="kpi-icon">📈</div>
+          <div class="kpi-content">
+            <div class="kpi-value" id="kpi-compliance">0%</div>
+            <div class="kpi-label">CUMPLIMIENTO</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHARTS SECTION -->
+      <div class="charts-section">
+        <div class="chart-container">
+          <h3>Tendencia Anual (Últimos 12 Meses)</h3>
+          <canvas id="trendChart"></canvas>
+        </div>
+
+        <div class="chart-container">
+          <h3>Estado Global</h3>
+          <canvas id="statusChart"></canvas>
+        </div>
+      </div>
+
+      <!-- INDICADORES CRÍTICOS -->
+      <div class="critical-section">
+        <h3>⚠️ Indicadores en Vigilancia</h3>
+        <div id="critical-list" class="critical-list">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN: AREAS -->
+    <section id="areas-screen" class="screen">
+      <h2>Áreas del Sistema</h2>
+      <p class="subtitle">Selecciona un área para explorar sus indicadores</p>
+      
+      <div id="areas-grid" class="areas-grid">
+        <!-- Populated dynamically -->
+      </div>
+    </section>
+
+    <!-- SCREEN: TABLE -->
+    <section id="table-screen" class="screen">
+      <div class="table-header">
+        <h2>Indicadores del Sistema</h2>
+        <div class="filters">
+          <select id="areaFilter" class="filter-select">
+            <option value="all">Todas las áreas</option>
+          </select>
+          <select id="statusFilter" class="filter-select">
+            <option value="all">Todos los estados</option>
+            <option value="ok">En meta</option>
+            <option value="warning">En vigilancia</option>
+            <option value="critical">Fuera de meta</option>
+          </select>
+          <input type="text" id="searchInput" class="search-input" placeholder="Buscar indicador...">
+        </div>
+      </div>
+      
+      <div class="table-wrapper">
+        <table id="indicators-table" class="indicators-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre del Indicador</th>
+              <th>Valor Actual</th>
+              <th>Meta</th>
+              <th>Estado</th>
+              <th>Unidad</th>
+              <th>Área</th>
+              <th>Actualización</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SCREEN: DETAIL -->
+    <section id="detail-screen" class="screen">
+      <div class="detail-header">
+        <button id="backBtn" class="btn btn-text">← Volver</button>
+        <h2 id="detail-title">Selecciona un indicador</h2>
+      </div>
+
+      <div id="detail-content" class="detail-content hidden">
+        <!-- LEFT PANEL: Value & Metadata -->
+        <div class="detail-left">
+          <div class="value-hero">
+            <div class="value-display">
+              <div class="current-value" id="detail-current">--</div>
+              <div class="value-unit" id="detail-unit">N/A</div>
+            </div>
+            <div class="value-meta">
+              <div class="meta-item">
+                <span class="meta-label">META:</span>
+                <span class="meta-value" id="detail-target">--</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">ESTADO:</span>
+                <span class="meta-status" id="detail-status">--</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="metadata-grid">
+            <div class="meta-field">
+              <label>NOMBRE</label>
+              <p id="detail-name">--</p>
+            </div>
+            <div class="meta-field">
+              <label>ÁREA</label>
+              <p id="detail-area">--</p>
+            </div>
+            <div class="meta-field">
+              <label>UNIDAD</label>
+              <p id="detail-unit-full">--</p>
+            </div>
+            <div class="meta-field">
+              <label>PROCESO</label>
+              <p id="detail-process">--</p>
+            </div>
+            <div class="meta-field">
+              <label>FRECUENCIA</label>
+              <p id="detail-frequency">--</p>
+            </div>
+            <div class="meta-field">
+              <label>SENTIDO META</label>
+              <p id="detail-direction">--</p>
+            </div>
+            <div class="meta-field">
+              <label>ÚLTIMA ACTUALIZACIÓN</label>
+              <p id="detail-update">--</p>
+            </div>
+            <div class="meta-field">
+              <label>PUNTOS HISTÓRICOS</label>
+              <p id="detail-datapoints">--</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT PANEL: Charts & History -->
+        <div class="detail-right">
+          <div class="chart-section">
+            <h3>Serie Histórica (Últimos 24 Meses)</h3>
+            <canvas id="detailChart"></canvas>
+          </div>
+
+          <div class="history-section">
+            <h3>Histórico Reciente</h3>
+            <table class="history-table">
+              <thead>
+                <tr>
+                  <th>Período</th>
+                  <th>Valor</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody id="history-body">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="detail-empty" class="detail-empty">
+        <p>Selecciona un indicador de la tabla para ver su detalle</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>HUS 2026 | Sistema de Indicadores de Calidad | Datos: 2010-2026</p>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script type="module" src="../src/app.js"></script>
+</body>
+</html>

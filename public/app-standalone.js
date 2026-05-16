@@ -48,6 +48,8 @@ function initAuthentication() {
     state.authenticated = true;
     loginView.classList.add('hidden');
     unlockApp();
+    setUserInUI(savedUser);
+    initializeApp();
     return;
   }
 

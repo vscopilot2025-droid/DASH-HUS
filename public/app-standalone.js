@@ -5,151 +5,26 @@
  */
 
 // ============================================
-// DATOS DE EJEMPLO (207 Indicadores simplificados)
+// DATOS DE EJEMPLO (70 Indicadores reales HUS)
 // ============================================
 
-const SAMPLE_INDICATORS = [
-  {
-    id: 'IND-001',
-    code: 'CODE-001',
-    name: 'Tiempo Promedio de Atención en Urgencias',
-    area: 'Urgencias',
-    unit: 'minutos',
-    frequency: 'Mensual',
-    processId: 'PROC-001',
-    direction: 'min',
-    currentValue: 45,
-    targetValue: 30,
-    lastUpdate: '2026-05-16',
-    historicalDataPoints: 24,
-    history: [
-      { month: 'Mayo 2024', value: 52 },
-      { month: 'Junio 2024', value: 50 },
-      { month: 'Julio 2024', value: 48 },
-      { month: 'Agosto 2024', value: 46 },
-      { month: 'Septiembre 2024', value: 44 },
-      { month: 'Octubre 2024', value: 43 },
-      { month: 'Noviembre 2024', value: 42 },
-      { month: 'Diciembre 2024', value: 40 },
-      { month: 'Enero 2025', value: 39 },
-      { month: 'Febrero 2025', value: 38 },
-      { month: 'Marzo 2025', value: 37 },
-      { month: 'Abril 2025', value: 45 }
-    ]
-  },
-  {
-    id: 'IND-002',
-    code: 'CODE-002',
-    name: 'Ocupación Hospitalaria',
-    area: 'Hospitalización',
-    unit: '%',
-    frequency: 'Mensual',
-    processId: 'PROC-002',
-    direction: 'max',
-    currentValue: 78,
-    targetValue: 85,
-    lastUpdate: '2026-05-16',
-    historicalDataPoints: 24,
-    history: [
-      { month: 'Mayo 2024', value: 65 },
-      { month: 'Junio 2024', value: 68 },
-      { month: 'Julio 2024', value: 72 },
-      { month: 'Agosto 2024', value: 75 },
-      { month: 'Septiembre 2024', value: 78 },
-      { month: 'Octubre 2024', value: 80 },
-      { month: 'Noviembre 2024', value: 82 },
-      { month: 'Diciembre 2024', value: 81 },
-      { month: 'Enero 2025', value: 79 },
-      { month: 'Febrero 2025', value: 77 },
-      { month: 'Marzo 2025', value: 75 },
-      { month: 'Abril 2025', value: 78 }
-    ]
-  },
-  {
-    id: 'IND-003',
-    code: 'CODE-003',
-    name: 'Satisfacción del Paciente',
-    area: 'Calidad',
-    unit: 'puntos',
-    frequency: 'Mensual',
-    processId: 'PROC-003',
-    direction: 'max',
-    currentValue: 92,
-    targetValue: 90,
-    lastUpdate: '2026-05-16',
-    historicalDataPoints: 24,
-    history: [
-      { month: 'Mayo 2024', value: 85 },
-      { month: 'Junio 2024', value: 86 },
-      { month: 'Julio 2024', value: 87 },
-      { month: 'Agosto 2024', value: 88 },
-      { month: 'Septiembre 2024', value: 89 },
-      { month: 'Octubre 2024', value: 90 },
-      { month: 'Noviembre 2024', value: 91 },
-      { month: 'Diciembre 2024', value: 91 },
-      { month: 'Enero 2025', value: 92 },
-      { month: 'Febrero 2025', value: 92 },
-      { month: 'Marzo 2025', value: 93 },
-      { month: 'Abril 2025', value: 92 }
-    ]
-  },
-  {
-    id: 'IND-004',
-    code: 'CODE-004',
-    name: 'Infecciones Intrahospitalarias',
-    area: 'Infecciones',
-    unit: 'casos',
-    frequency: 'Mensual',
-    processId: 'PROC-004',
-    direction: 'min',
-    currentValue: 8,
-    targetValue: 5,
-    lastUpdate: '2026-05-16',
-    historicalDataPoints: 24,
-    history: [
-      { month: 'Mayo 2024', value: 15 },
-      { month: 'Junio 2024', value: 14 },
-      { month: 'Julio 2024', value: 13 },
-      { month: 'Agosto 2024', value: 12 },
-      { month: 'Septiembre 2024', value: 11 },
-      { month: 'Octubre 2024', value: 10 },
-      { month: 'Noviembre 2024', value: 9 },
-      { month: 'Diciembre 2024', value: 8 },
-      { month: 'Enero 2025', value: 7 },
-      { month: 'Febrero 2025', value: 6 },
-      { month: 'Marzo 2025', value: 5 },
-      { month: 'Abril 2025', value: 8 }
-    ]
-  },
-  {
-    id: 'IND-005',
-    code: 'CODE-005',
-    name: 'Disponibilidad de Equipos Médicos',
-    area: 'Infraestructura',
-    unit: '%',
-    frequency: 'Mensual',
-    processId: 'PROC-005',
-    direction: 'max',
-    currentValue: 95,
-    targetValue: 98,
-    lastUpdate: '2026-05-16',
-    historicalDataPoints: 24,
-    history: [
-      { month: 'Mayo 2024', value: 88 },
-      { month: 'Junio 2024', value: 90 },
-      { month: 'Julio 2024', value: 91 },
-      { month: 'Agosto 2024', value: 92 },
-      { month: 'Septiembre 2024', value: 93 },
-      { month: 'Octubre 2024', value: 94 },
-      { month: 'Noviembre 2024', value: 95 },
-      { month: 'Diciembre 2024', value: 95 },
-      { month: 'Enero 2025', value: 95 },
-      { month: 'Febrero 2025', value: 96 },
-      { month: 'Marzo 2025', value: 96 },
-      { month: 'Abril 2025', value: 95 }
-    ]
-  }
-];
+// Los 70 indicadores se cargan desde indicators-data.js (INDICATORS_70)
+// Preparar con metadata estándar para compatibilidad
+const SAMPLE_INDICATORS = INDICATORS_70.map(ind => ({
+  id: ind.id,
+  code: ind.code,
+  name: ind.name,
+  area: ind.area,
+  unit: ind.unit,
+  frequency: 'Mensual',
+  processId: ind.code,
+  direction: ind.direction,
+  currentValue: ind.currentValue,
+  targetValue: ind.targetValue,
+  lastUpdate: '2026-05-16',
+  historicalDataPoints: ind.history.length,
+  history: ind.history
+}));
 
 // ============================================
 // ESTADO GLOBAL

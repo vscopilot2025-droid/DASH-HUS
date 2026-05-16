@@ -5,26 +5,11 @@
  */
 
 // ============================================
-// DATOS DE EJEMPLO (70 Indicadores reales HUS)
+// DATOS REALES: 207 Indicadores desde BD
 // ============================================
 
-// Los 70 indicadores se cargan desde indicators-data.js (INDICATORS_70)
-// Preparar con metadata estándar para compatibilidad
-const SAMPLE_INDICATORS = INDICATORS_70.map(ind => ({
-  id: ind.id,
-  code: ind.code,
-  name: ind.name,
-  area: ind.area,
-  unit: ind.unit,
-  frequency: 'Mensual',
-  processId: ind.code,
-  direction: ind.direction,
-  currentValue: ind.currentValue,
-  targetValue: ind.targetValue,
-  lastUpdate: '2026-05-16',
-  historicalDataPoints: ind.history.length,
-  history: ind.history
-}));
+// Los datos se cargan desde indicatorsDatabase.js (INDICATORS_DATABASE)
+const SAMPLE_INDICATORS = INDICATORS_DATABASE;
 
 // ============================================
 // ESTADO GLOBAL
@@ -462,33 +447,6 @@ function showScreen(screenName) {
 }
 
 // ============================================
-// CARGAR EXCEL
-// ============================================
-
-function handleExcelUpload(file) {
-  if (!file || typeof XLSX === 'undefined') {
-    alert('Archivo no seleccionado o XLSX no disponible');
-    return;
-  }
-  
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    try {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: 'array' });
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
-      const jsonData = XLSX.utils.sheet_to_json(sheet);
-      
-      console.log('Excel cargado:', jsonData);
-      alert('✅ Archivo Excel cargado exitosamente');
-    } catch (error) {
-      console.error('Error al cargar Excel:', error);
-      alert('❌ Error al cargar el archivo');
-    }
-  };
-  reader.readAsArrayBuffer(file);
-}
-
 // ============================================
 // INICIALIZAR APP
 // ============================================
@@ -506,19 +464,6 @@ function initializeApp() {
   if (backBtn) {
     backBtn.addEventListener('click', () => {
       showScreen('table');
-    });
-  }
-  
-  // Upload Excel
-  const uploadBtn = document.getElementById('uploadExcelBtn');
-  const excelInput = document.getElementById('excelInput');
-  
-  if (uploadBtn && excelInput) {
-    uploadBtn.addEventListener('click', () => excelInput.click());
-    excelInput.addEventListener('change', (e) => {
-      if (e.target.files[0]) {
-        handleExcelUpload(e.target.files[0]);
-      }
     });
   }
   

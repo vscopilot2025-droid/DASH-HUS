@@ -28,13 +28,12 @@ const state = {
 };
 
 // ============================================
-// AUTENTICACIÓN CLIENTE-SIDE
+// AUTENTICACIÓN CLIENTE-SIDE (HARDCODED)
 // ============================================
 
-const users = {
-  'admin': 'admin',
-  'usuario': 'usuario123'
-};
+// Solo admin/admin - sin tabla de usuarios
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = 'admin';
 
 function initAuthentication() {
   const loginView = document.getElementById('loginView');
@@ -61,8 +60,8 @@ function initAuthentication() {
     const username = document.getElementById('loginUsername').value;
     const password = document.getElementById('loginPassword').value;
     
-    // Verificar credenciales
-    if (users[username] === password) {
+    // Verificar credenciales (admin/admin)
+    if (username === ADMIN_USER && password === ADMIN_PASS) {
       state.currentUser = username;
       state.authenticated = true;
       localStorage.setItem('husUser', username);
@@ -72,7 +71,7 @@ function initAuthentication() {
       setUserInUI(username);
       initializeApp();
     } else {
-      loginError.textContent = '❌ Usuario o contraseña incorrectos';
+      loginError.textContent = '❌ Usuario o contraseña incorrectos (admin/admin)';
       loginError.style.display = 'block';
     }
   });

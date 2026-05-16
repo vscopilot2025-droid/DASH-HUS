@@ -41,6 +41,16 @@ function initAuthentication() {
   const loginError = document.getElementById('loginError');
   const logoutBtn = document.getElementById('logoutBtn');
 
+  logoutBtn.addEventListener('click', () => {
+    state.authenticated = false;
+    state.currentUser = null;
+    localStorage.removeItem('husUser');
+    loginView.classList.remove('hidden');
+    loginForm.reset();
+    loginError.textContent = '';
+    lockApp();
+  });
+
   // Verificar si ya hay sesión guardada
   const savedUser = localStorage.getItem('husUser');
   if (savedUser) {
@@ -76,16 +86,6 @@ function initAuthentication() {
       loginError.textContent = '❌ Usuario o contraseña incorrectos (admin/admin)';
       loginError.style.display = 'block';
     }
-  });
-
-  logoutBtn.addEventListener('click', () => {
-    state.authenticated = false;
-    state.currentUser = null;
-    localStorage.removeItem('husUser');
-    loginView.classList.remove('hidden');
-    loginForm.reset();
-    loginError.textContent = '';
-    lockApp();
   });
 }
 

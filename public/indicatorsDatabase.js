@@ -5,7 +5,7 @@
  * Generado automáticamente
  */
 
-export const INDICATORS_DATABASE = [
+const INDICATORS_DATABASE = [
   {
     "id": "IND-4663",
     "code": "CODE-4663",
@@ -185960,24 +185960,24 @@ export const INDICATORS_DATABASE = [
   }
 ];
 
-export function getAllIndicators() {
+function getAllIndicators() {
   return INDICATORS_DATABASE;
 }
 
-export function getIndicatorsByArea(area) {
+function getIndicatorsByArea(area) {
   if (area === 'all' || !area) return INDICATORS_DATABASE;
   return INDICATORS_DATABASE.filter(ind => ind.area === area);
 }
 
-export function getAreas() {
+function getAreas() {
   return [...new Set(INDICATORS_DATABASE.map(ind => ind.area))].sort();
 }
 
-export function getIndicatorById(id) {
+function getIndicatorById(id) {
   return INDICATORS_DATABASE.find(ind => ind.id === id || ind.code === id);
 }
 
-export function getSummaryMetrics() {
+function getSummaryMetrics() {
   const uniqueAreas = new Set(INDICATORS_DATABASE.map(ind => ind.area));
   const uniqueProcesses = new Set(INDICATORS_DATABASE.map(ind => ind.processId));
   const totalDataPoints = INDICATORS_DATABASE.reduce((sum, ind) => sum + ind.historicalDataPoints, 0);
@@ -186003,3 +186003,11 @@ export function getSummaryMetrics() {
     }
   };
 }
+
+// Exponer globalmente para scripts no-módulo
+window.INDICATORS_DATABASE = INDICATORS_DATABASE;
+window.getAllIndicators = getAllIndicators;
+window.getIndicatorsByArea = getIndicatorsByArea;
+window.getAreas = getAreas;
+window.getIndicatorById = getIndicatorById;
+window.getSummaryMetrics = getSummaryMetrics;

@@ -496,14 +496,6 @@ Para contribuir:
 
 ---
 
-## 📞 Contacto
-
-Para dudas o reportar bugs:
-- Email: soporte@hus.edu.co
-- GitHub Issues: [Issues](https://github.com/vscopilot2025-droid/DASH-HUS/issues)
-
----
-
 **Última actualización:** 16 de mayo de 2026  
 **Versión:** 1.0.0  
 **Estado:** En desarrollo activo ✨

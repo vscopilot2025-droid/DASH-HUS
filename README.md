@@ -25,10 +25,10 @@ Sistema dinámico de indicadores con arquitectura hexagonal
 Dashboard institucional para monitorear indicadores de calidad en la institución hospitalaria. Implementa una capa de presentación web con HTML5, CSS3 y JavaScript, utilizando Chart.js para gráficos y carga de Excel para datos dinámicos.
 
 **Stack Tecnológico:**
-- **Backend:** Node.js + Express.js
-- **Frontend:** JavaScript puro (ES6 modules) + Chart.js
-- **Base de Datos:** MariaDB/MySQL
-- **Autenticación:** bcryptjs + JWT (futuro)
+- **Backend:** Node.js + Express.js (opcional)
+- **Frontend:** JavaScript puro (ES6) + Chart.js
+- **Base de Datos:** MariaDB/MySQL (solo para indicadores, no para usuarios)
+- **Autenticación:** Hardcoded (admin/admin) - sin tabla de usuarios
 - **Arquitectura:** Hexagonal (Puertos y Adaptadores)
 
 ---
@@ -70,17 +70,13 @@ cd DASH-HUS
 # 2. Instalar dependencias
 npm install
 
-# 3. Configurar variables de entorno
+# 3. Configurar variables de entorno (opcional - solo para conexión BD)
 cp .env.example .env
-# Edita .env con tus credenciales de BD
 
-# 4. Crear tabla de usuarios e inicializar BD
-npm run db:setup-users
-
-# 5. Iniciar el servidor
+# 4. Iniciar el servidor
 npm start
 
-# 6. Abrir en navegador
+# 5. Abrir en navegador
 # http://localhost:3000
 ```
 
@@ -89,14 +85,13 @@ npm start
 - **Usuario:** `admin`
 - **Contraseña:** `admin`
 
-⚠️ **Cambiar en producción**
+⚠️ **Sin tabla de usuarios en BD** - Credenciales hardcodeadas en el código
 
 ### Scripts npm Disponibles
 
 ```bash
 npm start                      # Iniciar servidor (producción)
 npm run dev                    # Iniciar en modo desarrollo
-npm run db:setup-users         # Crear tabla usuarios
 npm run generate:indicators    # Generar datos de prueba
 npm run analyze:excel          # Analizar archivos Excel
 ```
@@ -146,13 +141,11 @@ DASH-HUS/
 │   └── 📂 assets/                   # Logos, imágenes
 │       └── hus-logo.png
 │
-├── 📂 database/                     # BD y migraciones
-│   └── 📂 sql/
-│       └── create_usuarios_table.sql
+├── 📂 database/                     # Migraciones (si es necesario)
 │
 ├── 📂 scripts/                      # Scripts de utilidad
 │   ├── 📂 data/                     # Procesamiento de datos
-│   └── 📂 setup/                    # Configuración
+│   └── 📂 setup/                    # Configuración (no se usa)
 │
 ├── 📂 config/                       # Configuración centralizada
 │
@@ -226,7 +219,7 @@ Implementaciones técnicas:
 #### 4. **Presentation (presentation/)**
 Interfaz con el usuario:
 - Controllers (Express) - Futuro
-- Middleware - Autenticación
+- Middleware - Autenticación (hardcoded admin/admin)
 - Routes - Rutas API
 - Views - Vistas HTML
 
@@ -237,7 +230,7 @@ Interfaz con el usuario:
 ### Variables de Entorno (.env)
 
 ```env
-# Base de Datos
+# Base de Datos (solo para indicadores, no para usuarios)
 DB_HOST=127.0.0.1
 DB_PORT=3304
 DB_USER=root
@@ -247,9 +240,6 @@ DB_NAME=hospital_kpi
 # Servidor
 PORT=3000
 NODE_ENV=development
-
-# JWT (Futuro)
-JWT_SECRET=tu-clave-secreta
 
 # Logging
 LOG_LEVEL=info
@@ -294,27 +284,28 @@ node scripts/data/analyze-all-sheets.js
 
 ```bash
 # Crear tabla de usuarios
-npm run db:setup-users
+npm run generate:indicators
 
-# Ejecutar script directamente
-node scripts/setup/setup-users-table.js
+# Abrir página de prueba del Dashboard
+# Navega a: http://localhost:3000/public/index.html o abre public/index.html en navegador
 ```
 
 ---
 
 ## 🔄 Cambios Recientes (16 de Mayo de 2026)
 
-### ✨ Reorganización de Arquitectura
+### ✨ Optimización de Autenticación
 
-Se implementó una arquitectura hexagonal profesional con separación clara de responsabilidades.
+Se simplificó la autenticación eliminando la tabla de usuarios en BD y usando credenciales hardcodeadas (admin/admin).
 
-#### Movimientos de Archivos
+#### Cambios Realizados
 
-| Anterior | Nuevo | Razón |
-|----------|-------|-------|
-| `src/auth.js` | `src/presentation/middleware/auth.js` | Middleware |
-| `src/*.js datos` | `src/shared/data/` | Datos compartidos |
-| `styles/` | `public/styles/` | Estáticos |
+| Cambio | Antes | Después |
+|--------|-------|---------|
+| Tabla de Usuarios | MariaDB | ❌ Eliminada |
+| Autenticación | bcryptjs + JWT | admin/admin hardcodeado |
+| Archivo Setup | scripts/setup/setup-users-table.js | ❌ No se usa |
+| Credenciales | Desde BD | Desde código |
 | `assets/` | `public/assets/` | Estáticos |
 | `sql/` | `database/sql/` | BD |
 | Scripts sueltos | `scripts/` | Organización |
@@ -413,13 +404,14 @@ El parser detecta automáticamente encabezados. Columnas sugeridas:
     "express": "^4.21.2",           // Framework web
     "mariadb": "^3.5.2",            // Driver BD
     "mysql2": "^3.22.3",            // Driver BD (alternativo)
-    "bcryptjs": "^2.4.3",           // Hash de contraseñas
     "xlsx": "^0.18.5"               // Lectura Excel
   }
 }
 ```
 
 **Frontend:** Chart.js (CDN)
+
+**Nota:** bcryptjs fue removido - autenticación ahora es hardcodeada (admin/admin)
 
 ---
 
@@ -438,12 +430,12 @@ El parser detecta automáticamente encabezados. Columnas sugeridas:
 - [ ] Variables de entorno por ambiente
 
 ### Largo Plazo
-- [ ] Autenticación JWT
 - [ ] Base de datos persistente para indicadores
 - [ ] Histórico de cambios
 - [ ] Sistema de alertas
 - [ ] Reportes PDF
 - [ ] API REST completa
+- [ ] Dashboard multiusuario (tabla de usuarios en BD)
 
 ---
 
@@ -453,9 +445,13 @@ El parser detecta automáticamente encabezados. Columnas sugeridas:
 Verifica que las rutas de importación sean correctas y relativas desde el archivo actual.
 
 ### Errores de BD
-- Verifica que MariaDB está corriendo
+- Verifica que MariaDB está corriendo (solo para indicadores)
 - Revisa credenciales en `.env`
-- Ejecuta `npm run db:setup-users`
+
+### El Dashboard no muestra datos
+- Abre la consola del navegador (F12)
+- Verifica que `indicatorsDatabase.js` se cargó correctamente
+- Limpia caché: Ctrl+Shift+Delete (Chrome)
 
 ### Puerto 3000 en uso
 ```bash
